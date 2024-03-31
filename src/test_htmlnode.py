@@ -27,6 +27,21 @@ class TestHTMLNode(unittest.TestCase):
         node = LeafNode(tag=tag, value=text)
         self.assertEqual(node.to_html(), text)
 
+    def test_to_html_leafnode_props(self):
+        tag = "a"
+        text = "Click me!"
+        props = {"href":"https://www.google.com"}
+
+        props_html = ""
+
+        for prop, prop_val in props.items():
+            props_html += f' {prop}="{prop_val}"'
+
+        node = LeafNode(tag=tag, value=text, props=props)
+        self.assertEqual(
+            node.to_html(),
+            f"<{tag}{props_html}>{text}</{tag}>"
+        )
 
 if __name__ == "__main__":
     unittest.main()
