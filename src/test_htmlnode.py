@@ -30,7 +30,7 @@ class TestHTMLNode(unittest.TestCase):
     def test_to_html_leafnode_props(self):
         tag = "a"
         text = "Click me!"
-        props = {"href":"https://www.google.com"}
+        props = {"href": "https://www.google.com"}
 
         props_html = ""
 
@@ -38,10 +38,7 @@ class TestHTMLNode(unittest.TestCase):
             props_html += f' {prop}="{prop_val}"'
 
         node = LeafNode(tag=tag, value=text, props=props)
-        self.assertEqual(
-                node.to_html(),
-            f"<{tag}{props_html}>{text}</{tag}>"
-        )
+        self.assertEqual(node.to_html(), f"<{tag}{props_html}>{text}</{tag}>")
 
     def test_to_html_parentnode(self):
         tag = "p"
@@ -65,13 +62,14 @@ class TestHTMLNode(unittest.TestCase):
         grandchild1 = LeafNode("b", "Grandchild1")
         grandchild2 = LeafNode("i", "Grandchild2")
         child1 = ParentNode("span", [grandchild1, grandchild2])
-        child2 = LeafNode("code","y=mx+c")
+        child2 = LeafNode("code", "y=mx+c")
         parentnode = ParentNode("div", [child1, child2])
 
         self.assertEqual(
             parentnode.to_html(),
-            f"<div><span><b>Grandchild1</b><i>Grandchild2</i></span><code>y=mx+c</code></div>"
+            f"<div><span><b>Grandchild1</b><i>Grandchild2</i></span><code>y=mx+c</code></div>",
         )
+
 
 if __name__ == "__main__":
     unittest.main()
