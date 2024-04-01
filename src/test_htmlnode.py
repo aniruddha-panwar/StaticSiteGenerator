@@ -60,5 +60,18 @@ class TestHTMLNode(unittest.TestCase):
             node.to_html(),
             "<p><b>Bold Text</b>Normal Text<i>Italic Text</i>Normal Text</p>",
         )
+
+    def test_to_html_parentnode_grandchildren(self):
+        grandchild1 = LeafNode("b", "Grandchild1")
+        grandchild2 = LeafNode("i", "Grandchild2")
+        child1 = ParentNode("span", [grandchild1, grandchild2])
+        child2 = LeafNode("code","y=mx+c")
+        parentnode = ParentNode("div", [child1, child2])
+
+        self.assertEqual(
+            parentnode.to_html(),
+            f"<div><span><b>Grandchild1</b><i>Grandchild2</i></span><code>y=mx+c</code></div>"
+        )
+
 if __name__ == "__main__":
     unittest.main()
