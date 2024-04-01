@@ -50,16 +50,20 @@ class LeafNode(HTMLNode):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.tag}, {self.value}, {self.props})"
 
+
 class ParentNode(HTMLNode):
     """
     class to represent nested HTML nodes (one's which have children)
     """
+
     def __init__(self, tag, children, props=None):
         super().__init__(tag, None, children, props)
 
     def to_html(self):
-        if self.tag is None: raise ValueError("Invalid tag value: None")
-        if self.children is None: raise ValueError("Invalid children value: None")
+        if self.tag is None:
+            raise ValueError("Invalid tag value: None")
+        if self.children is None:
+            raise ValueError("Invalid children value: None")
 
         children_html_str = ""
         for child in self.children:
