@@ -39,6 +39,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 )
     return delimited_nodes
 
+
 def extract_markdown_images(text):
     """
     Takes in raw text and spits out alt text and url of markdown images
@@ -47,6 +48,7 @@ def extract_markdown_images(text):
     pattern = r"!\[(.*?)\]\((.*?)\)"
     matches = re.findall(pattern, text)
     return matches
+
 
 def extract_markdown_links(text):
     """
