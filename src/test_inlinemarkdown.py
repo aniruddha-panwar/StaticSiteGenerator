@@ -1,5 +1,9 @@
 import unittest
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import (
+    split_nodes_delimiter,
+    extract_markdown_links,
+    extract_markdown_images,
+)
 from textnode import (
     TextNode,
     text_type_text,
@@ -66,6 +70,34 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("y=mx+c", text_type_code),
                 TextNode("Answer: ", text_type_text),
                 TextNode("42", text_type_code),
+            ],
+        )
+
+    def test_extract_markdown_image_alt_text_url(self):
+        text = "This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and ![another](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png)"
+        extracted_alt_text_url = extract_markdown_images(text)
+        self.assertEqual(
+            extracted_alt_text_url,
+            [
+                (
+                    "image",
+                    "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png",
+                ),
+                (
+                    "another",
+                    "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/dfsdkjfd.png",
+                ),
+            ],
+        )
+
+    def test_extract_markdown_links_anchor_text_url(self):
+        text = "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
+        extracted_anchor_text_url = extract_markdown_links(text)
+        self.assertEqual(
+            extracted_anchor_text_url,
+            [
+                ("link", "https://www.example.com"),
+                ("another", "https://www.example.com/another"),
             ],
         )
 
