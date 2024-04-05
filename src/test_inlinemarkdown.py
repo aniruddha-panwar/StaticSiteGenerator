@@ -3,6 +3,7 @@ from inline_markdown import (
     split_nodes_delimiter,
     extract_markdown_links,
     extract_markdown_images,
+    split_nodes_image,
 )
 from textnode import (
     TextNode,
@@ -10,6 +11,7 @@ from textnode import (
     text_type_bold,
     text_type_italic,
     text_type_code,
+    text_type_image,
 )
 
 
@@ -101,6 +103,31 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
         )
 
+    def test_split_nodes_single_image_single(self):
+        """
+        Test case to check split_nodes_image when one text node has one image
+        """
+        anchor_text = "image1"
+        img_url = "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png"
+        text = f"This is a text with ![{anchor_text}]({img_url}). So now what?"
+
+        import logging
+        logging.info(text)
+
+        input_node = TextNode(
+            text,
+            text_type_text,
+        )
+        self.assertEqual(
+            split_nodes_image(
+                [input_node]
+            ),
+            [
+                TextNode("This is a text with ", text_type_text),
+                TextNode(anchor_text, text_type_image, img_url),
+                TextNode(". So now what?", text_type_text),
+            ],
+        )
 
 if __name__ == "__main__":
     unittest.main()

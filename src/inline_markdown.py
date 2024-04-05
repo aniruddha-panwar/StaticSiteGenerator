@@ -5,6 +5,7 @@ from textnode import (
     text_type_bold,
     text_type_italic,
     text_type_code,
+    text_type_image,
 )
 
 
@@ -85,7 +86,7 @@ def split_nodes_image(old_nodes):
             # the following split, should split the text into 2 parts
             # one part before the img anchor text and url
             # one part after the img anchor text and url
-            sections = old_node_text.split(f"![{image[0]}]({image[1]}), 1")
+            sections = old_node_text.split(f"![{image[0]}]({image[1]})", 1)
 
             # we should have 2 sections per the split above
             # anything else is an invalid image markdown
