@@ -129,5 +129,41 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
         )
 
+    def test_split_nodes_multiple_image_multiple(self):
+        self.maxDiff = None
+        anchor_texts = ["image"+str(i+1) for i in range(3)]
+        img_urls = [
+            "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png",
+            "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png",
+            "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png",
+        ]
+
+        input_nodes = [
+            TextNode(
+                "The nodes after this will have images",
+                text_type_text,
+            ),
+            TextNode(
+                f"Here is an image - ![{anchor_texts[0]}]({img_urls[0]})",
+                text_type_text,
+            ),
+            TextNode(
+                f"Here is img1 -> ![{anchor_texts[1]}]({img_urls[1]}) and another -> ![{anchor_texts[2]}]({img_urls[2]})",
+                text_type_text,
+            ),
+        ]
+        self.assertEqual(
+            split_nodes_image(input_nodes),
+            [
+                TextNode("The nodes after this will have images", text_type_text),
+                TextNode("Here is an image - ", text_type_text),
+                TextNode(anchor_texts[0], text_type_image, img_urls[0]),
+                TextNode("Here is img1 -> ", text_type_text,),
+                TextNode(anchor_texts[1], text_type_image, img_urls[1]),
+                TextNode(" and another -> ", text_type_text),
+                TextNode(anchor_texts[2], text_type_image, img_urls[2]),
+            ]
+        )
+
 if __name__ == "__main__":
     unittest.main()

@@ -80,6 +80,7 @@ def split_nodes_image(old_nodes):
         # No images in nodes text; dont split up the node
         if len(images) == 0:
             split_nodes.append(old_node)
+            continue
 
         for image in images:
 
@@ -91,6 +92,10 @@ def split_nodes_image(old_nodes):
             # we should have 2 sections per the split above
             # anything else is an invalid image markdown
             if len(sections) != 2:
+                import logging
+                logging.error(f"{image = }")
+                logging.error(f"{old_node_text = }")
+                logging.error(f"{sections = }")
                 raise ValueError("Invalid markdown, image section not closed")
 
             # check if sections[0] text is not empty
@@ -110,12 +115,17 @@ def split_nodes_image(old_nodes):
                 )
             )
  
-            if sections[1] != "":
-                split_nodes.append(
-                    TextNode(
-                        sections[1],
-                        text_type_text
-                    )
+            # sections[0] and first image has been processed
+            # so take it out of the text (old_node_text)
+            old_node_text = sections[1]
+
+        # any left over unprocessed sections
+        if old_node_text != "":
+            split_nodes.append(
+                TextNode(
+                    old_node_text,
+                    text_type_text,
                 )
+            )
 
     return split_nodes
