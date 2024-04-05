@@ -57,3 +57,64 @@ def extract_markdown_links(text):
     pattern = r"\[(.*?)\]\((.*?)\)"
     matches = re.findall(pattern, text)
     return matches
+
+def split_nodes_image(old_nodes):
+    """
+    Takes in a list of TextNodes and spews out TextNodes with text and image types
+    """
+    split_nodes = []
+
+    # Check if the old nodes have images
+    # If they have images process them (split up into text and image type)
+
+    for old_node in old_nodes:
+        # if encountering a non-text type node
+        if old_node.text_type != text_type_text:
+            split_nodes.append(old_node)
+            continue
+
+        old_node_text = old_node.text
+        images = extract_markdown_images(old_node.text)
+
+        # No images in nodes text; dont split up the node
+        if len(images) == 0:
+            split_nodes.append(old_node)
+
+        for image in images:
+
+            # the following split, should split the text into 2 parts
+            # one part before the img anchor text and url
+            # one part after the img anchor text and url
+            sections = old_node_text.split(f"![{image[0]}]({image[1]}), 1")
+
+            # we should have 2 sections per the split above
+            # anything else is an invalid image markdown
+            if len(sections) != 2:
+                raise ValueError("Invalid markdown, image section not closed")
+
+            # check if sections[0] text is not empty
+            if sections[0] != "":
+                split_nodes.append(
+                    TextNode(
+                        sections[0],
+                        text_type_text,
+                    )
+                )
+
+            split_nodes.append(
+                TextNode(
+                    image[0],
+                    text_type_image,
+                    image[1],
+                )
+            )
+ 
+            if sections[1] != "":
+                split_nodes.append(
+                    TextNode(
+                        sections[1],
+                        text_type_text
+                    )
+                )
+
+    return split_nodes
