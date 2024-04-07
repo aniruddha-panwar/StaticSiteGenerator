@@ -194,6 +194,49 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
         )
 
+    def test_split_nodes_link_multiple(self):
+        """
+        Test the split_nodes_link method, with multiple text node input
+        One of the text nodes contains > 1 link
+        """
+        alt_texts = [f"link{i+1}" for i in range(3)]
+        urls = [
+            "www.google.com",
+            "www.linkedin.com",
+            "www.youtube.com",
+        ]
+
+        text1 = f"This text contains 2 links - [{alt_texts[0]}]({urls[0]}) and [{alt_texts[1]}]({urls[1]})"
+        text2 = ""
+        text3 = f"But wait, there's more - [{alt_texts[2]}]({urls[2]})"
+        input_nodes = [
+            TextNode(
+                text1,
+                text_type_text,
+            ),
+            TextNode(
+                text2,
+                text_type_text,
+            ),
+            TextNode(
+                text3,
+                text_type_text,
+            ),
+        ]
+
+        self.assertEqual(
+            split_nodes_link(input_nodes),
+            [
+                TextNode("This text contains 2 links - ", text_type_text),
+                TextNode(alt_texts[0], text_type_link, urls[0]),
+                TextNode(" and ", text_type_text),
+                TextNode(alt_texts[1], text_type_link, urls[1]),
+                TextNode("", text_type_text),
+                TextNode("But wait, there's more - ", text_type_text),
+                TextNode(alt_texts[2], text_type_link, urls[2]),
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
