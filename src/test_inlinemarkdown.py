@@ -5,6 +5,7 @@ from inline_markdown import (
     extract_markdown_images,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
 )
 from textnode import (
     TextNode,
@@ -235,6 +236,31 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("But wait, there's more - ", text_type_text),
                 TextNode(alt_texts[2], text_type_link, urls[2]),
             ],
+        )
+
+    def test_text_to_textnodes(self):
+        """
+        Test case to check text_to_textnodes helper
+        """
+        input_text = "This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)"
+        self.assertEqual(
+            [
+                TextNode("This is ", text_type_text),
+                TextNode("text", text_type_bold),
+                TextNode(" with an ", text_type_text),
+                TextNode("italic", text_type_italic),
+                TextNode(" word and a ", text_type_text),
+                TextNode("code block", text_type_code),
+                TextNode(" and an ", text_type_text),
+                TextNode(
+                    "image",
+                    text_type_image,
+                    "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png",
+                ),
+                TextNode(" and a ", text_type_text),
+                TextNode("link", text_type_link, "https://boot.dev"),
+            ],
+            text_to_textnodes(input_text),
         )
 
 
