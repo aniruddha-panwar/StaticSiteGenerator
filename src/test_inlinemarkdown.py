@@ -4,6 +4,7 @@ from inline_markdown import (
     extract_markdown_links,
     extract_markdown_images,
     split_nodes_image,
+    split_nodes_link,
 )
 from textnode import (
     TextNode,
@@ -12,6 +13,7 @@ from textnode import (
     text_type_italic,
     text_type_code,
     text_type_image,
+    text_type_link,
 )
 
 
@@ -112,6 +114,7 @@ class TestInlineMarkdown(unittest.TestCase):
         text = f"This is a text with ![{anchor_text}]({img_url}). So now what?"
 
         import logging
+
         logging.info(text)
 
         input_node = TextNode(
@@ -119,9 +122,7 @@ class TestInlineMarkdown(unittest.TestCase):
             text_type_text,
         )
         self.assertEqual(
-            split_nodes_image(
-                [input_node]
-            ),
+            split_nodes_image([input_node]),
             [
                 TextNode("This is a text with ", text_type_text),
                 TextNode(anchor_text, text_type_image, img_url),
@@ -131,7 +132,7 @@ class TestInlineMarkdown(unittest.TestCase):
 
     def test_split_nodes_multiple_image_multiple(self):
         self.maxDiff = None
-        anchor_texts = ["image"+str(i+1) for i in range(3)]
+        anchor_texts = ["image" + str(i + 1) for i in range(3)]
         img_urls = [
             "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png",
             "https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png",
@@ -158,12 +159,41 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("The nodes after this will have images", text_type_text),
                 TextNode("Here is an image - ", text_type_text),
                 TextNode(anchor_texts[0], text_type_image, img_urls[0]),
-                TextNode("Here is img1 -> ", text_type_text,),
+                TextNode(
+                    "Here is img1 -> ",
+                    text_type_text,
+                ),
                 TextNode(anchor_texts[1], text_type_image, img_urls[1]),
                 TextNode(" and another -> ", text_type_text),
                 TextNode(anchor_texts[2], text_type_image, img_urls[2]),
-            ]
+            ],
         )
+
+    def test_split_nodes_link_single(self):
+        """
+        Test the split_nodes_link method, with single text node input
+        that contains a single link
+        """
+        alt_text = "link"
+        url = "https://www.linkedin.com/"
+        text = f"This text contains a [{alt_text}]({url}). Whoa!"
+        input_node = TextNode(
+            text,
+            text_type_text,
+        )
+
+        self.assertEqual(
+            split_nodes_link([input_node]),
+            [
+                TextNode(
+                    "This text contains a ",
+                    text_type_text,
+                ),
+                TextNode(alt_text, text_type_link, url),
+                TextNode(". Whoa!", text_type_text),
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
