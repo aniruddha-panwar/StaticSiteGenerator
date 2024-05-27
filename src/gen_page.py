@@ -1,7 +1,13 @@
 import os
-from block_markdown import markdown_to_blocks, block_to_block_type, block_type_heading, markdown_to_htmlnode
+from block_markdown import (
+    markdown_to_blocks,
+    block_to_block_type,
+    block_type_heading,
+    markdown_to_htmlnode,
+)
 
-def extract_title(markdown:str):
+
+def extract_title(markdown: str):
     """
     Get the title from a markdown text wall
     A valid/qualifying markdown should have a level 1 title ("# blah blah")
@@ -15,8 +21,9 @@ def extract_title(markdown:str):
                 return block[2:]
     raise ValueError("No title found for h1 header")
 
+
 def generate_page(from_path, template_path, dest_path):
-    
+
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     # read markdown file at from_path
@@ -39,12 +46,35 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown_contents)
 
     # replace title and content in template
-    template_contents = template_contents.replace("{{ Title }}", title).replace("{{ Content }}", html_contents)
+    template_contents = template_contents.replace("{{ Title }}", title).replace(
+        "{{ Content }}", html_contents
+    )
 
     # write new html to file at dest_path
     # get dest_path parent dir
     dest_path_parent_dir = os.path.dirname(dest_path)
     if not os.path.exists(dest_path_parent_dir):
         os.makedirs(dest_path_parent_dir)
-    with open(dest_path, 'w') as writer:
+    with open(dest_path, "w") as writer:
         writer.write(template_contents)
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    if not os.path.exists(dir_path_content):
+        raise ValueError(f"Source directory does not exist: {dir_path_content}")
+
+    if not os.path.isdir(dir_path_content):
+        raise ValueError(f"Source path is not a directory: {dir_path_content}")
+
+    print(f"Scanning the directory {dir_path_content}")
+
+    for file_folder in os.listdir(dir_path_content):
+        file_folder_path = os.path.join(dir_path_content, file_folder)
+        dest_path = os.path.join(dest_dir_path, file_folder)
+        if file_folder.endswith(".md"):
+            generate_page(
+                file_folder_path, template_path, dest_path.replace(".md", "") + ".html"
+            )
+
+        if os.path.isdir(file_folder_path):
+            generate_pages_recursive(file_folder_path, template_path, dest_path)
